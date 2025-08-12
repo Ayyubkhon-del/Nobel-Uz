@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>NOBEL UZ | ОНЛАЙН МАГАЗИН</title>
+<style>
+  /* Твой CSS без изменений */
+  :root {
+    --bg: #0b0b0b;
+    --card: #141414;
+    --gold: #ffd166;
+    --gold-dark: #b8860b;
+    --muted: #dcdcdc;
+    --accent: #fff;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+    background: radial-gradient(1200px 400px at 10% 10%, rgba(255, 215, 0, 0.03), transparent),
+      linear-gradient(180deg, var(--bg), #050505 60%);
+    color: var(--muted);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    padding: 28px 20px;
+    text-align: center;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.4),
+      rgba(20, 20, 20, 0.6)
+    );
+    border-bottom: 1px solid rgba(255, 215, 0, 0.06);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6),
+      0 0 40px rgba(184, 134, 11, 0.05) inset;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    color: var(--gold);
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 10px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 215, 0, 0.06),
+      rgba(255, 215, 0, 0.02)
+    );
+  }
+  header nav {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  header nav a {
+    color: var(--gold);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  header nav a:hover {
+    text-decoration: underline;
+  }
+  header .btn-container {
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .btn {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+    color: #081013;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 8px 18px rgba(184, 134, 11, 0.12);
+    transition: transform 0.18s, box-shadow 0.18s;
+  }
+  .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(184, 134, 11, 0.18);
+  }
+  .admin-panel {
+    display: none;
+    background: linear-gradient(180deg, #111, #0f0f0f);
+    border: 1px solid rgba(255, 215, 0, 0.06);
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    margin: 20px auto;
+    max-width: 1200px;
+    color: var(--gold);
+  }
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 120px;
+    gap: 12px;
+    align-items: center;
+  }
+  .admin-grid input[type="text"],
+  .admin-grid input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    background: #0b0b0b;
+    color: var(--muted);
+    outline: none;
+  }
+  .admin-grid input[type="file"] {
+    color: var(--muted);
+  }
+  .admin-bottom {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .info-block {
+    display: none;
+    background: #111;
+    border-top: 1px solid rgba(255, 215, 0, 0.12);
+    padding: 24px 18px;
+    color: var(--gold);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    max-width: 1200px;
+    margin: 20px auto;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+  }
+  .info-block ul {
+    margin: 12px 0 0 18px;
+    padding-left: 0;
+    list-style-type: disc;
+  }
+  .info-block ul li {
+    margin-bottom: 6px;
+  }
+  .wrap {
+    max-width: 1200px;
+    margin: 28px auto 60px;
+    padding: 0 18px;
+    flex-grow: 1;
+  }
+  /* Стили для товаров */
+  #productList {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 18px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+    gap: 16px;
+  }
+  .product-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    color: var(--muted);
+  }
+  .product-card img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    object-fit: cover;
+    height: 160px;
+  }
+  .product-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--gold);
+  }
+  .product-card .price {
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .product-card button {
+    margin-top: auto;
+    background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+    color: #081013;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 8px 18px rgba(184, 134, 11, 0.12);
+    transition: background-color 0.3s;
+  }
+  .product-card button:hover {
+    background: var(--gold-dark);
+    color: #fff;
+  }
+  /* Корзина */
+  #cart {
+    max-width: 1200px;
+    margin: 0 auto 40px;
+    padding: 18px;
+    background: var(--card);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    color: var(--gold);
+  }
+  #cart h2 {
+    margin-top: 0;
+  }
+  #cart ul {
+    list-style: none;
+    padding-left: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 12px;
+  }
+  #cart ul li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  #cart ul li button {
+    background: transparent;
+    border: none;
+    color: var(--gold);
+    cursor: pointer;
+    font-weight: 700;
+  }
+  #cart .total {
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>NOBEL UZ | ОНЛАЙН МАГАЗИН</h1>
+  <nav>
+    <a href="https://www.instagram.com/nobel_uz1" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://t.me/+X5m5jCOv7tVlMmYy" target="_blank" rel="noopener">Telegram</a>
+    <a href="tel:+998950670856">Позвонить</a>
+  </nav>
+  <div class="btn-container">
+    <button class="btn" onclick="toggleInfo()">Инфо</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="adminPanel" class="admin-panel" aria-hidden="true">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 800;">
+      Админ-панель
+      <span style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.7)">Только для администратора</span>
+    </div>
+    <div class="admin-grid">
+      <div>
+        <input id="productName" type="text" placeholder="Название товара (обязательно)" />
+        <input id="productPrice" type="number" step="0.01" placeholder="Цена (например 199.99)" />
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-end">
+        <input id="productImage" type="file" accept="image/*" />
+        <small style="color: var(--muted);">Загрузить файл с ПК</small>
+      </div>
+    </div>
+    <div class="admin-bottom">
+      <button class="btn" onclick="addProduct()">Добавить товар</button>
+      <button
+        class="btn"
+        style="background: transparent; color: var(--gold); border: 1px solid rgba(255, 215, 0, 0.08)"
+        onclick="clearProducts()"
+      >
+        Очистить всё
+      </button>
+    </div>
+  </div>
+
+  <section id="infoBlock" class="info-block" aria-label="Информация о доставке и условиях">
+    <p>✨🇺🇿 Оригинал &amp; Люкс-копии высокого качества</p>
+    <ul>
+      <li>Доставка: 7–14 дней</li>
+      <li>Отправка по всему Узбекистану</li>
+      <li>Предоплата 50%</li>
+      <li>Возврата нет❗️</li>
+    </ul>
+  </section>
+
+  <section id="productList" aria-label="Список товаров">
+    <!-- Товары будут здесь -->
+  </section>
+
+  <section id="cart" aria-label="Корзина покупок" style="display:none;">
+    <h2>Корзина</h2>
+    <ul id="cartItems"></ul>
+    <div class="total">Итого: <span id="cartTotal">0</span> сум</div>
+  </section>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "nobel2025"; // Поменяй пароль, если хочешь
+
+  function toggleInfo() {
+    const info = document.getElementById("infoBlock");
+    const isHidden = info.style.display === "none" || info.style.display === "";
+    info.style.display = isHidden ? "block" : "none";
+    info.setAttribute("aria-hidden", !isHidden);
+  }
+
+  // Обработка Ctrl+Alt+1+2+3 с паролем
+  let keySequence = [];
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && e.altKey) {
+      if (['1','2','3'].includes(e.key)) {
+        keySequence.push(e.key);
+        if (keySequence.join('') === '123') {
+          const panel = document.getElementById('adminPanel');
+          if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+            panel.setAttribute('aria-hidden', true);
+          } else {
+            const pass = prompt("Введите пароль для входа в админ-панель:");
+            if (pass === ADMIN_PASSWORD) {
+              panel.style.display = 'block';
+              panel.setAttribute('aria-hidden', false);
+            } else {
+              alert("Неверный пароль!");
+            }
+          }
+          keySequence = [];
+        }
+      } else {
+        keySequence = [];
+      }
+    } else {
+      keySequence = [];
+    }
+  });
+
+  // Массив товаров и корзина из localStorage или пустые
+  let products = JSON.parse(localStorage.getItem('products')) || [];
+  let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+  const productListEl = document.getElementById('productList');
+  const cartEl = document.getElementById('cart');
+  const cartItemsEl = document.getElementById('cartItems');
+  const cartTotalEl = document.getElementById('cartTotal');
+
+  function saveProducts() {
+    localStorage.setItem('products', JSON.stringify(products));
+  }
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  // Отрисовка товаров
+  function renderProducts() {
+    productListEl.innerHTML = '';
+    if (products.length === 0) {
+      productListEl.innerHTML = '<p style="text-align:center; color: var(--muted);">Товары отсутствуют</p>';
+      cartEl.style.display = 'none';
+      return;
+    }
+    cartEl.style.display = 'block';
+    products.forEach((product, idx) => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+
+      // Изображение (если есть)
+      if (product.image) {
+        const img = document.createElement('img');
+        img.src = product.image;
+        img.alt = product.name;
+        card.appendChild(img);
+      }
+
+      const title = document.createElement('h3');
+      title.textContent = product.name;
+      card.appendChild(title);
+
+      const price = document.createElement('div');
+      price.className = 'price';
+      price.textContent = product.price.toLocaleString('ru-RU', { style: 'currency', currency: 'UZS' });
+      card.appendChild(price);
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Добавить в корзину';
+      btn.addEventListener('click', () => addToCart(idx));
+      card.appendChild(btn);
+
+      productListEl.appendChild(card);
+    });
+    renderCart();
+  }
+
+  // Добавление товара в корзину
+  function addToCart(productIndex) {
+    if (!cart[productIndex]) {
+      cart[productIndex] = 1;
+    } else {
+      cart[productIndex]++;
+    }
+    saveCart();
+    renderCart();
+  }
+
+  // Отрисовка корзины
+  function renderCart() {
+    cartItemsEl.innerHTML = '';
+    let total = 0;
+    const keys = Object.keys(cart);
+    if (keys.length === 0) {
+      cartItemsEl.innerHTML = '<li>Корзина пуста</li>';
+      cartTotalEl.textContent = '0';
+      return;
+    }
+    keys.forEach(key => {
+      const product = products[key];
+      const quantity = cart[key];
+      const li = document.createElement('li');
+
+      li.textContent = `${product.name} x ${quantity} — ${(product.price * quantity).toLocaleString('ru-RU')} сум`;
+
+      // Кнопка удаления
+      const removeBtn = document.createElement('button');
+      removeBtn.textContent = '×';
+      removeBtn.title = 'Удалить из корзины';
+      removeBtn.addEventListener('click', () => {
+        delete cart[key];
+        saveCart();
+        renderCart();
+      });
+      li.appendChild(removeBtn);
+
+      cartItemsEl.appendChild(li);
+
+      total += product.price * quantity;
+    });
+    cartTotalEl.textContent = total.toLocaleString('ru-RU');
+  }
+
+  // Очистить все товары и корзину
+  function clearProducts() {
+    if (confirm('Удалить все товары и очистить корзину?')) {
+      products = [];
+      cart = {};
+      saveProducts();
+      saveCart();
+      renderProducts();
+    }
+  }
+
+  // Добавление товара через админ-панель
+  function addProduct() {
+    const nameInput = document.getElementById('productName');
+    const priceInput = document.getElementById('productPrice');
+    const imageInput = document.getElementById('productImage');
+
+    const name = nameInput.value.trim();
+    const price = parseFloat(priceInput.value);
+
+    if (!name) {
+      alert('Введите название товара');
+      return;
+    }
+    if (isNaN(price) || price <= 0) {
+      alert('Введите корректную цену');
+      return;
+    }
+    // Обработка изображения (чтение файла)
+    if (imageInput.files.length > 0) {
+      const file = imageInput.files[0];
+      const reader = new
