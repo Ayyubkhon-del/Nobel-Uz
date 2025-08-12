@@ -8,14 +8,79 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
-    /* ... СТИЛИ ОСТАЮТСЯ КАК ВАШИ ... */
-    /* (можно скопировать отсюда: https://github.com/Ayyubkhon-del/Nobel-Uz/blob/main/index.html) */
     :root { --bg: #0b0b0b; --card: #141414; --gold: #ffd166; --gold-dark: #b8860b; --muted: #dcdcdc; }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: "Inter", "Segoe UI", Arial, sans-serif; background: radial-gradient(1200px 400px at 10% 10%, rgba(255, 215, 0, 0.03), transparent), linear-gradient(180deg, var(--bg), #050505 60%); color: var(--muted); min-height: 100vh; display: flex; flex-direction: column; }
-    /* ... (остальной CSS как в вашем оригинале) ... */
+    header { padding: 28px 20px 12px 20px; text-align: center; background: linear-gradient(90deg, rgba(0,0,0,0.4), rgba(20,20,20,0.6)); border-bottom: 1px solid rgba(255,215,0,0.06); box-shadow: 0 10px 35px rgba(0,0,0,0.6), 0 0 40px rgba(184,134,11,0.05) inset; position: relative; }
+    header h1 { margin: 0; font-size: 1.6rem; letter-spacing: 2px; color: var(--gold); display: inline-block; padding: 8px 18px; border-radius: 10px; background: linear-gradient(90deg, rgba(255,215,0,0.06), rgba(255,215,0,0.02)); }
+    header nav { margin-top: 12px; display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; align-items: center; }
+    header nav a { color: var(--gold); font-weight: 600; text-decoration: none; }
+    header nav a:hover { text-decoration: underline; }
+    .delivery-btn { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #081013; border: none; padding: 8px 20px; border-radius: 10px; cursor: pointer; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 8px 18px rgba(184,134,11,0.12); transition: background 0.2s, box-shadow 0.2s; display: inline-block; vertical-align: middle; }
+    .delivery-btn:hover { background: var(--gold-dark); color: #fff; box-shadow: 0 14px 30px rgba(184,134,11,0.18); }
+    header .btn-container { margin-top: 14px; display: flex; justify-content: center; gap: 12px; }
+    .btn { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #081013; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 8px 18px rgba(184,134,11,0.12); transition: transform 0.18s, box-shadow 0.18s; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(184,134,11,0.18); }
     .admin-panel { display: none; background: linear-gradient(180deg, #111, #0f0f0f); border: 1px solid rgba(255,215,0,0.06); padding: 16px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); margin: 20px auto; max-width: 1200px; color: var(--gold); }
-    /* ... и так далее ... */
+    .admin-grid { display: grid; grid-template-columns: 1fr 180px; gap: 12px; align-items: center; }
+    .admin-grid input[type="text"], .admin-grid input[type="file"] { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); background: #0b0b0b; color: var(--muted); outline: none; }
+    .admin-bottom { margin-top: 10px; display: flex; gap: 10px; justify-content: flex-end; }
+    .info-block { display: none; background: #111; border-top: 1px solid rgba(255,215,0,0.12); padding: 24px 18px; color: var(--gold); font-weight: 600; font-size: 1.05rem; line-height: 1.5; max-width: 1200px; margin: 20px auto; border-radius: 10px; box-shadow: 0 0 20px rgba(255,215,0,0.2); }
+    .info-block ul { margin: 12px 0 0 18px; padding-left: 0; list-style-type: disc; }
+    .info-block ul li { margin-bottom: 6px; }
+    .wrap { max-width: 1200px; margin: 28px auto 60px; padding: 0 18px; flex-grow: 1; }
+    #productList { max-width: 1200px; margin: 20px auto;padding: 0 18px; display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 16px; }
+    .product-card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); display: flex; flex-direction: column; color: var(--muted); cursor: pointer; aspect-ratio: 5 / 7; min-height: 280px; max-height: 420px; position: relative; overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
+    .product-card:hover { box-shadow: 0 8px 30px rgba(255,215,0,0.20); transform: translateY(-3px) scale(1.03); }
+    .product-card .carousel { width: 100%; height: 70%; min-height: 180px; border-radius: 10px; background: #222; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; cursor: pointer; user-select: none; }
+    .product-card .carousel img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; transition: opacity 0.3s; width: 100%; height: 100%; background: #111; position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; }
+    .product-card .carousel img.active { opacity: 1; pointer-events: auto; z-index: 2; }
+    .carousel-dots { position: absolute; left: 0; bottom: 5px; width: 100%; text-align: center; z-index: 3; }
+    .carousel-dot { display: inline-block; width: 10px; height: 10px; margin: 0 2px; background: var(--muted); border-radius: 50%; opacity: 0.5; cursor: pointer; border: 1px solid #999; transition: background 0.2s, opacity 0.2s; }
+    .carousel-dot.active { background: var(--gold); opacity: 1; border-color: var(--gold-dark); }
+    .product-card h3 { margin: 10px 0 8px 0; color: var(--gold); font-size: 1.13rem; font-weight: 700; text-align: left; }
+    .product-card .price { font-weight: 700; margin-bottom: 12px; color: var(--muted); font-size: 1.08rem; text-align: left; }
+    .product-card button { margin-top: auto; background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #081013; border: none; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 8px 18px rgba(184,134,11,0.12); transition: background-color 0.3s; }
+    .product-card button:hover { background: var(--gold-dark); color: #fff; }
+    #cartIcon { position: absolute; top: 12px; right: 26px; z-index: 22; cursor: pointer; background: var(--card); border-radius: 50%; box-shadow: 0 6px 16px rgba(255,215,0,0.07); display: flex; align-items: center; padding: 8px; transition: box-shadow 0.2s; }
+    #cartIcon:hover { box-shadow: 0 10px 26px rgba(255,215,0,0.18); background: var(--gold-dark); }
+    #cartIcon svg { width: 26px; height:26px; display:block; margin-right:4px; fill: var(--gold); transition: fill 0.2s; }
+    #cartIcon span { font-weight:700; color: var(--gold); font-size:1.09rem; margin-left:2px; }
+    #cart { position: fixed; top: 54px; right: 32px; min-width: 300px; max-width: 370px; padding: 18px; background: var(--card); border-radius: 16px; box-shadow: 0 12px 44px rgba(0,0,0,0.7); color: var(--gold); opacity: 0; transform: translateY(-30px); pointer-events: none; transition: opacity 0.4s cubic-bezier(.5,1.8,.5,1), transform 0.4s cubic-bezier(.5,1.8,.5,1); }
+    #cart.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #cart h2 { margin-top: 0; font-size: 1.15rem; color: var(--gold); }
+    #cart ul { list-style: none; padding-left: 0; max-height: 200px; overflow-y: auto; margin-bottom: 12px; color: var(--muted); }
+    #cart ul li {display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 1rem; }
+    #cart ul li button { background: transparent; border: none; color: var(--gold); cursor: pointer; font-weight: 700; font-size: 1.02rem; }
+    #cart .total { font-weight: 800; font-size: 1.2rem; text-align: right; color: var(--gold); }
+    #cart .close-cart { background: transparent; border: none; color: var(--gold); font-size: 1.24rem; font-weight: bold; position: absolute; top: 8px; right: 12px; cursor: pointer; }
+
+    #modalOverlay { display: none; position: fixed; z-index: 99999; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(10,10,10,0.83); align-items: center; justify-content: center; animation: fadeInBg 0.3s; }
+    #modalOverlay.active { display: flex; animation: fadeInBg 0.3s; }
+    @keyframes fadeInBg { from { opacity: 0; } to   { opacity: 1; } }
+    #modalCard {
+      background: var(--card); border-radius: 18px; box-shadow: 0 10px 60px rgba(0,0,0,0.5), 0 0 80px var(--gold-dark) inset;
+      padding: 26px 32px 18px 32px; min-width: 320px; max-width: 90vw; min-height: 320px; max-height: 90vh; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; position: relative; animation: scaleModalIn 0.4s cubic-bezier(.5,1.8,.5,1);
+      aspect-ratio: 5/7; overflow: hidden;
+    }
+    @keyframes scaleModalIn { from { transform: scale(0.5) translateY(40px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    #modalCard .close-modal { position: absolute; right: 18px; top: 18px; background: transparent; color: var(--gold); border: none; font-size: 1.8rem; font-weight: 700; cursor: pointer; z-index: 2; }
+    #modalCard .modal-carousel { flex: 1; width: 100%; height: 65%; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; margin-bottom: 18px; margin-top: 8px; }
+    #modalCard .modal-carousel img { max-width: 100%; max-height: 320px; object-fit: contain; border-radius: 14px; box-shadow: 0 2px 18px rgba(255,215,0,0.07); background: #222; transition: box-shadow 0.2s, opacity 0.2s; cursor: grab; position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; }
+    #modalCard .modal-carousel img.active { opacity: 1; pointer-events: auto; z-index: 2; }
+    #modalCard .modal-dots { position: absolute; left: 0; bottom: 8px; width: 100%; text-align: center; z-index: 3; }
+    #modalCard .modal-dot { display: inline-block; width: 13px; height: 13px; margin: 0 3px; background: var(--muted); border-radius: 50%; opacity: 0.5; cursor: pointer; border: 1px solid #999; transition: background 0.2s, opacity 0.2s; }
+    #modalCard .modal-dot.active { background: var(--gold); opacity: 1; border-color: var(--gold-dark); }
+    #modalCard h3 { margin: 0 0 12px 0; color: var(--gold); font-size: 1.25rem; font-weight: 700; text-align: center; word-break: break-word; }
+    #modalCard .price { font-weight: 700; color: var(--muted); font-size: 1.09rem; margin-bottom: 16px; text-align: center; }
+    #modalCard button { background: linear-gradient(180deg, var(--gold), var(--gold-dark)); color: #081013; border: none; padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 700; letter-spacing: 0.3px; box-shadow: 0 8px 18px rgba(184,134,11,0.12); margin: 0 auto; margin-top: 12px; transition: background-color 0.3s; font-size: 1.05rem; }
+    #modalCard button:hover { background: var(--gold-dark); color: #fff; }
+    @media (max-width: 600px) {
+      #modalCard {padding: 12px 8px 10px 8px; min-width: 90vw; min-height: 200px; max-height: 92vh;}
+      #modalCard .modal-carousel img {max-width: 95vw; max-height: 180px;}
+      .product-card {min-height: 180px; max-height: 280px;}
+    }
   </style>
 </head>
 <body>
@@ -32,7 +97,7 @@
   </div>
   <div id="cartIcon" onclick="toggleCart()">
     <svg viewBox="0 0 24 24">
-      <path d="M7 18c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm10 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zM7.16 15h9.74c.79 0 1.51-.47 1.83-1.18l3.24-7.02c.19-.41.03-.89-.39[...]"/>
+      <path d="M7 18c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zm10 0c-1.104 0-2 .896-2 2s.896 2 2 2 2-.896 2-2-.896-2-2-2zM7.16 15h9.74c.79 0 1.51-.47 1.83-1.18l3.24-7.02c.19-.41.03-.89-.39..." />
     </svg>
     <span id="cartCount">0</span>
   </div>
@@ -82,7 +147,7 @@
 
 <!-- Модалка доставки -->
 <div id="deliveryModal" style="display:none;position:fixed;z-index:999999;left:0;top:0;width:100vw;height:100vh; background:rgba(10,10,10,0.93);align-items:center;justify-content:center;">
-  <div style="background:var(--card);border-radius:18px;box-shadow:0 10px 60px rgba(0,0,0,0.5);min-width:320px;max-width:95vw;min-height:120px;max-height:80vh;padding:32px;color:var(--gold);display:fl[...]
+  <div style="background:var(--card);border-radius:18px;box-shadow:0 10px 60px rgba(0,0,0,0.5);min-width:320px;max-width:95vw;min-height:120px;max-height:80vh;padding:32px;color:var(--gold);display:flex;flex-direction:column;align-items:center;position:relative;">
     <button onclick="closeDeliveryInfo()" style="position:absolute;right:18px;top:18px;background:transparent;color:var(--gold);border:none;font-size:2rem;cursor:pointer;font-weight:bold;">×</button>
     <h2 style="margin-top:0;">Информация о доставке</h2>
     <div id="deliveryContent" style="font-size:1.1rem;line-height:1.7;text-align:center;">
@@ -98,19 +163,19 @@
 </div>
 
 <script>
-/* --- ВСТАВЬ СВОИ КЛЮЧИ СЮДА --- */
+// --- FIREBASE CONFIG ---
 const firebaseConfig = {
-  apiKey: "ВАШ_API_KEY",
-  authDomain: "ВАШ_PROJECT_ID.firebaseapp.com",
-  projectId: "ВАШ_PROJECT_ID",
-  storageBucket: "ВАШ_PROJECT_ID.appspot.com",
-  messagingSenderId: "ВАШ_SENDER_ID",
-  appId: "ВАШ_APP_ID"
+  apiKey: "AIzaSyAHaVDDP_KMg0ugd1Vnpx5jjpprkIqM3ic",
+  authDomain: "nobeluz-bc774.firebaseapp.com",
+  projectId: "nobeluz-bc774",
+  storageBucket: "nobeluz-bc774.appspot.com",
+  messagingSenderId: "960848289574",
+  appId: "1:960848289574:web:73df7839c8a14100ee2be7",
+  measurementId: "G-ECSZQBQ76F"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* --- ОСТАЛЬНОЙ КОД --- */
 const adminPassword = "adminnobe2009@"; // пароль для админки
 
 function toggleInfo() {
